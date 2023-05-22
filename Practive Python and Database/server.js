@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const session = require('express-session');
+const fetch = require('node-fetch');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -95,6 +96,44 @@ app.post('/registration', (req, res) => {
       }
     }
   });
+});
+
+app.post('/api', requireLogin, (req, res) => {
+  const inputText = req.body.inputText;
+  const organizationId = '527652'; // Replace with your actual organization ID
+
+  const url = `https://enterprise-api.writer.com/content/organization/${organizationId}/detect`;
+  const options = {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      Authorization: 'imYgxJYIKcUqeA_jCRo2Ba-Lcv5j0Yzrv1hgAeCROzKx7HpJWYipC-DwkGcFybflSaqGjc02_8EBGqrZq01oI1a0J1U-PPeD0bWk7HiQQprAcmC7Nts3Xr7At1yN8Q_u',
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      input: inputText
+    })
+  };
+
+  fetch(url, options)
+    .then(response => response.json())
+    .then(result => {
+      // Render the results on the api.html page
+      res.send(`
+        <h1>API Page</h1>
+        <form action="/api" method="POST">
+          <label for="inputText">Input text (Limit of 1,500 characters at a time):</label>
+          <textarea id="inputText" name="inputText" rows="4" cols="50" required>${inputText}</textarea><br><br>
+          <input type="submit" value="Submit">
+        </form>
+        <h2>Results:</h2>
+        <pre>${JSON.stringify(result, null, 2)}</pre>
+      `);
+    })
+    .catch(error => {
+      console.error('Error calling the API:', error);
+      res.status(500).send('Error calling the API');
+    });
 });
 
 const server = app.listen(3000, () => {
