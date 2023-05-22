@@ -118,6 +118,9 @@ app.post('/api', requireLogin, (req, res) => {
   fetch(url, options)
     .then(response => response.json())
     .then(result => {
+      const realPercentage = Math.round(result[0].score * 100); // Calculate the percentage for "real"
+      const fakePercentage = Math.round(result[1].score * 100); // Calculate the percentage for "fake"
+
       // Render the results on the api.html page
       res.send(`
         <h1>API Page</h1>
@@ -127,7 +130,7 @@ app.post('/api', requireLogin, (req, res) => {
           <input type="submit" value="Submit">
         </form>
         <h2>Results:</h2>
-        <pre>${JSON.stringify(result, null, 2)}</pre>
+        <pre>Real: ${realPercentage}%, Fake: ${fakePercentage}%</pre>
       `);
     })
     .catch(error => {
