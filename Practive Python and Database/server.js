@@ -130,7 +130,7 @@ app.post('/api', requireLogin, (req, res) => {
           <input type="submit" value="Submit">
         </form>
         <h2>Results:</h2>
-        <pre>Real: ${realPercentage}%, Fake: ${fakePercentage}%</pre>
+        <pre>Human Generated Content: ${realPercentage}%,<br>AI Generated Content: ${fakePercentage}%</pre>
       `);
     })
     .catch(error => {
