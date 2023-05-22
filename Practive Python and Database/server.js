@@ -58,6 +58,7 @@ app.post('/login', (req, res) => {
       if (results.length > 0) {
         console.log('Login successful');
         req.session.isLoggedIn = true; // Set isLoggedIn flag in session
+        req.session.userID = results[0].userID; // Set the userID in the session
         res.redirect('/api.html'); // Redirect to api.html upon successful login
       } else {
         console.log('Invalid credentials');
@@ -100,6 +101,7 @@ app.post('/registration', (req, res) => {
 
 app.post('/api', requireLogin, (req, res) => {
   const inputText = req.body.inputText;
+  const userID = req.session.userID; // Retrieve the user's ID from the session
   const organizationId = '527652'; // Replace with your actual organization ID
 
   const url = `https://enterprise-api.writer.com/content/organization/${organizationId}/detect`;
@@ -121,23 +123,48 @@ app.post('/api', requireLogin, (req, res) => {
       const realPercentage = Math.round(result[0].score * 100); // Calculate the percentage for "real"
       const fakePercentage = Math.round(result[1].score * 100); // Calculate the percentage for "fake"
 
-      // Render the results on the api.html page
-      res.send(`
-        <h1>API Page</h1>
-        <form action="/api" method="POST">
-          <label for="inputText">Input text (Limit of 1,500 characters at a time):</label>
-          <textarea id="inputText" name="inputText" rows="4" cols="50" required>${inputText}</textarea><br><br>
-          <input type="submit" value="Submit">
-        </form>
-        <h2>Results:</h2>
-        <pre>Human Generated Content: ${realPercentage}%,<br>AI Generated Content: ${fakePercentage}%</pre>
-      `);
+      // Save the input text to the MySQL table
+      connection.query('INSERT INTO inputs (userID, text) VALUES (?, ?)', [userID, inputText], (error, results) => {
+        if (error) {
+          console.error('Error saving input:', error);
+          res.status(500).send('Error saving input');
+        } else {
+          console.log('Input saved successfully');
+
+          // Render the results on the api.html page
+          res.send(`
+            <h1>API Page</h1>
+            <form action="/api" method="POST">
+              <label for="inputText">Input text (Limit of 1,500 characters at a time):</label>
+              <textarea id="inputText" name="inputText" rows="4" cols="50" required>${inputText}</textarea><br><br>
+              <input type="submit" value="Submit">
+            </form>
+            <h2>Results:</h2>
+            <pre>Human Generated Content: ${realPercentage}%,<br>AI Generated Content: ${fakePercentage}%</pre>
+          `);
+        }
+      });
     })
     .catch(error => {
       console.error('Error calling the API:', error);
       res.status(500).send('Error calling the API');
     });
 });
+
+app.post('/save-input', requireLogin, (req, res) => {
+  const inputText = req.body.inputText;
+
+  connection.query('INSERT INTO inputs (text) VALUES (?)', [inputText], (error, results) => {
+    if (error) {
+      console.error('Error saving input:', error);
+      res.status(500).send('Error saving input');
+    } else {
+      console.log('Input saved successfully');
+      res.redirect('/api.html');
+    }
+  });
+});
+
 
 const server = app.listen(3000, () => {
   console.log('Server running on port 3000');
