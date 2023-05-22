@@ -7,27 +7,36 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const connection = mysql.createConnection({
-  host:'127.0.0.1',
-  database:'practice',
-  user:'root',
-  password:'jmc12345'
+  host: '127.0.0.1',
+  database: 'practice',
+  user: 'root',
+  password: 'jmc12345'
 });
 
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
+  res.sendFile(__dirname + '/login.html');
+});
+
+app.get('/registration', (req, res) => {
   res.sendFile(__dirname + '/registration.html');
 });
 
-app.post('/registration', (req, res) => {
+app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  connection.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], (error, results) => {
+  connection.query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (error, results) => {
     if (error) {
-      console.error('Error registering user: ', error);
-      res.status(500).send('Error registering user');
+      console.error('Error logging in: ', error);
+      res.status(500).send('Error logging in');
     } else {
-      console.log('User registered successfully');
-      res.status(200).send('User registered successfully');
+      if (results.length > 0) {
+        console.log('Login successful');
+        res.status(200).send('Login successful');
+      } else {
+        console.log('Invalid credentials');
+        res.status(401).send('Invalid credentials');
+      }
     }
   });
 });
