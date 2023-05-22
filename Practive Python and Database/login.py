@@ -1,37 +1,23 @@
-import mysql.connector
-
-# Define the login function
-def login():
-    # Prompt the user for username and password
-    username = input("Enter your username: ")
-    password = input("Enter your password: ")
-
-    # Perform database query to check credentials
-    select_query = "SELECT COUNT(*) FROM user WHERE Username = %s AND Password = %s"
-    cursor.execute(select_query, (username, password))
-    result = cursor.fetchone()
-
-    if result[0] == 1:
-        print("Login successful!")
-        return True
-    else:
-        print("Incorrect username or password.")
-        return False
-
-# Establish a connection
-cnx = mysql.connector.connect(
-    host="127.0.0.1",
-    user="root",
-    password="jmc12345",
-    database="practice"
-)
-
-# Create a cursor
-cursor = cnx.cursor()
-
-# Call the login function
-login_success = login()
-
-# Close the connection
-cursor.close()
-cnx.close()
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Login</title>
+</head>
+<body>
+  <h1>User Login</h1>
+  <form action="/login" method="post" onsubmit="redirectToApi()">
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" required><br><br>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required><br><br>
+    <input type="submit" value="Login">
+  </form>
+  <br>
+  <p>Don't have an account? <a href="/registration">Register</a></p>
+  <script>
+    function redirectToApi() {
+      window.location.href = '/api-page.html';
+    }
+  </script>  
+</body>
+</html>
