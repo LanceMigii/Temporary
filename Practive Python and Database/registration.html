@@ -2,17 +2,97 @@
 <html>
 <head>
   <title>User Registration</title>
+  <style>
+    body {
+      background-color: #048A72;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    .container {
+      display: flex;
+    }
+
+
+    .left,
+    .right,
+    .middle {
+      height: 100vh;
+    }
+
+
+    .left,
+    .right {
+      width: 10%;
+      background-color: rgba(4, 138, 114, 0.7);
+      opacity: 0.7;
+    }
+
+
+    .middle {
+      flex-grow: 1;
+    }
+
+
+    h1 {
+      text-align: center;
+      color: rgb(0, 0, 0);
+      padding: 10px;
+    }
+
+
+    #register {
+      width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    #submitButton {
+      text-align: center;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="submit"] {
+      width: 50%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+
+    p {
+      text-align: center;
+      color: black;
+      margin-top: 20px
+    }
+  </style>
 </head>
 <body>
-  <h1>User Registration</h1>
-  <form action="/registration" method="post">
-    <label for="username">Username:</label>
-    <input type="text" name="username" id="username" required><br><br>
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required><br><br>
-    <input type="submit" value="Register">
-  </form>
+  <div id="register">
+    <h1>User Registration</h1>
+    <form action="/registration" method="post">
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" required><br><br>
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password" required><br><br>
+      <div id="submitButton">
+        <input type="submit" value="Register">
+      </div>
+    </form>
+  </div>
+  
   <br>
-  <p>Already have an account? <a href="/home">Login</a></p>
+  <p>Already have an account? <a href="/login">Login</a></p>
 </body>
 </html>
